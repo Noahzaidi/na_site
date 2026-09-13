@@ -2,6 +2,7 @@
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { PauseIcon, PlayIcon } from "@/components/icons";
+import { asset } from "@/lib/paths";
 
 type HeroVideoProps = {
   sources: readonly { src: string; type: string }[];
@@ -55,11 +56,11 @@ export function HeroVideo({ sources, poster }: HeroVideoProps) {
       <div
         className="hero-video"
         aria-hidden="true"
-        style={{ "--hero-poster": `url(${poster})` } as CSSProperties}
+        style={{ "--hero-poster": `url(${asset(poster)})` } as CSSProperties}
       >
         <video ref={videoRef} muted loop playsInline preload="none" disablePictureInPicture>
           {sources.map((source) => (
-            <source key={source.src} src={source.src} type={source.type} />
+            <source key={source.src} src={asset(source.src)} type={source.type} />
           ))}
         </video>
       </div>

@@ -4,6 +4,7 @@ import { BookingLink } from "@/components/BookingLink";
 import { CookieSettingsButton } from "@/components/CookieSettingsButton";
 import { regulations } from "@/content/legal";
 import { formattedAddress, siteConfig } from "@/content/site";
+import { asset } from "@/lib/paths";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -13,7 +14,7 @@ export function SiteFooter() {
       <div className="wrap grid gap-10 py-14 md:grid-cols-[1fr_auto] md:items-end">
         <div>
           <Image
-            src="/assets/noahark-lockup-horizontal.svg"
+            src={asset("/assets/noahark-lockup-horizontal.svg")}
             alt="NoahArk"
             width={1450}
             height={300}

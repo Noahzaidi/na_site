@@ -1,13 +1,17 @@
 // Rendered-site checks against a served static build.
 //   npx serve out -l 4173   (in another terminal)
 //   npm run check
+// For a sub-path build, serve it under that path and set
+// BASE_URL=http://localhost:4173/na_site BASE_PATH=/na_site.
 // Writes screenshots to docs/screenshots and exits non-zero on any failure.
 import { mkdir } from "node:fs/promises";
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:4173";
+const BASE_PATH = process.env.BASE_PATH ?? "";
 const SHOTS = process.env.SHOT_DIR ?? "docs/screenshots";
-const BOOKING_PATH = "/book/";
+const BOOKING_ROUTE = "/book/";
+const BOOKING_HREF = `${BASE_PATH}${BOOKING_ROUTE}`;
 const CALENDLY = "https://calendly.com/noahzaidi/30min";
 const CONSENT_KEY = "noahark-consent";
 const WIDTHS = [375, 768, 1440];
@@ -77,8 +81,15 @@ for (const width of WIDTHS) {
   await presetConsent(context, false);
   const page = await context.newPage();
   const errors = [];
+  const missing = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => isOwnError(message) && errors.push(message.text()));
+  page.on("response", (response) => {
+    const url = response.url();
+    if (response.status() === 404 && url.startsWith(BASE) && !url.includes("this-page-does-not-exist")) {
+      missing.push(url.replace(BASE, ""));
+    }
+  });
 
   for (const [name, path] of PAGES) {
     await page.goto(BASE + path, { waitUntil: "load" });
@@ -91,6 +102,7 @@ for (const width of WIDTHS) {
   }
 
   check(`@${width}: no console errors`, errors.length === 0, errors.join(" | "));
+  check(`@${width}: every asset loads (no 404s)`, missing.length === 0, [...new Set(missing)].join(", "));
   await context.close();
 }
 
@@ -101,15 +113,20 @@ for (const width of WIDTHS) {
   const page = await context.newPage();
   await page.goto(`${BASE}/`, { waitUntil: "load" });
 
-  const samePageTargets = await page.$$eval("a[href]", (links) => [
-    ...new Set(
-      links
-        .map((link) => link.getAttribute("href"))
-        .filter((href) => href.startsWith("#") || href.startsWith("/#"))
-        .map((href) => href.split("#")[1])
-        .filter(Boolean),
-    ),
-  ]);
+  const homePaths = new Set(["", "/", `${BASE_PATH}/`]);
+  const samePageTargets = await page.$$eval(
+    "a[href]",
+    (links, paths) => [
+      ...new Set(
+        links
+          .map((link) => link.getAttribute("href"))
+          .filter((href) => href.includes("#") && paths.includes(href.split("#")[0]))
+          .map((href) => href.split("#")[1])
+          .filter(Boolean),
+      ),
+    ],
+    [...homePaths],
+  );
   for (const id of samePageTargets) {
     check(`anchor #${id} has a target`, (await page.locator(`[id="${id}"]`).count()) === 1);
   }
@@ -122,7 +139,7 @@ for (const width of WIDTHS) {
   check("two primary CTAs on the page", ctas.length === 2, `${ctas.length} found`);
   check(
     "every primary CTA leads to the booking page",
-    ctas.every((cta) => cta.href === BOOKING_PATH && !cta.target),
+    ctas.every((cta) => cta.href === BOOKING_HREF && !cta.target),
     JSON.stringify(ctas),
   );
   check(
@@ -195,7 +212,7 @@ for (const width of WIDTHS) {
   check("about page has no embedded calendar", (await page.locator("iframe").count()) === 0);
   check(
     "about page links to the booking page",
-    (await page.locator(`a[href="${BOOKING_PATH}"]`).count()) > 0,
+    (await page.locator(`a[href="${BOOKING_HREF}"]`).count()) > 0,
   );
   await context.close();
 }
@@ -205,7 +222,7 @@ for (const width of WIDTHS) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await presetConsent(context, true);
   const page = await context.newPage();
-  await page.goto(`${BASE}${BOOKING_PATH}`, { waitUntil: "load" });
+  await page.goto(`${BASE}${BOOKING_ROUTE}`, { waitUntil: "load" });
   const frame = page.locator("iframe");
   await frame.waitFor({ timeout: 5000 }).catch(() => {});
   const frameSrc = await frame.first().getAttribute("src").catch(() => null);
@@ -237,7 +254,7 @@ for (const width of [1440, 375]) {
     `${accept?.height} vs ${reject?.height}`,
   );
 
-  await page.goto(`${BASE}${BOOKING_PATH}`, { waitUntil: "load" });
+  await page.goto(`${BASE}${BOOKING_ROUTE}`, { waitUntil: "load" });
   await page.waitForTimeout(500);
   check("calendar does not load before consent", (await page.locator("iframe").count()) === 0);
   check(
@@ -289,7 +306,7 @@ for (const width of [1440, 375]) {
   await page.keyboard.press("Escape");
   check("mobile menu closes with Escape", !(await menu.evaluate((node) => node.open)));
   await menu.locator("summary").click();
-  await menu.locator('a[href="/#approach"]').click();
+  await menu.locator(`a[href="${BASE_PATH}/#approach"]`).click();
   check("mobile menu closes after choosing a link", !(await menu.evaluate((node) => node.open)));
   await context.close();
 }

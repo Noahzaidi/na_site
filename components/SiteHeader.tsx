@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { asset } from "@/lib/paths";
 
 type NavItem = { readonly label: string; readonly href: string };
 
@@ -48,7 +49,7 @@ export function SiteHeader({ items, cta }: SiteHeaderProps) {
       <div className="wrap flex h-[72px] items-center justify-between gap-6">
         <Link href="/" className="inline-flex min-h-11 items-center" aria-label="NoahArk home">
           <Image
-            src="/assets/noahark-lockup-horizontal.svg"
+            src={asset("/assets/noahark-lockup-horizontal.svg")}
             alt="NoahArk"
             width={1450}
             height={300}
@@ -57,19 +58,20 @@ export function SiteHeader({ items, cta }: SiteHeaderProps) {
           />
         </Link>
 
+        {/* next/link adds the base path when the site runs under a sub-path. */}
         <nav aria-label="Primary" className="hidden md:block">
           <ul className="flex items-center gap-8">
             {items.map((item) => (
               <li key={item.href}>
-                <a href={item.href} className="nav-link">
+                <Link href={item.href} className="nav-link">
                   {item.label}
-                </a>
+                </Link>
               </li>
             ))}
             <li>
-              <a href={cta.href} className="btn-route">
+              <Link href={cta.href} className="btn-route">
                 {cta.label}
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -83,7 +85,7 @@ export function SiteHeader({ items, cta }: SiteHeaderProps) {
             <ul>
               {[...items, cta].map((item) => (
                 <li key={item.href}>
-                  <a href={item.href}>{item.label}</a>
+                  <Link href={item.href}>{item.label}</Link>
                 </li>
               ))}
             </ul>

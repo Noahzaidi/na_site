@@ -3,6 +3,7 @@ import Image from "next/image";
 import { BookingLink } from "@/components/BookingLink";
 import { ArrowRight, ExternalIcon } from "@/components/icons";
 import { about, finalCta, siteConfig } from "@/content/site";
+import { asset } from "@/lib/paths";
 
 export const metadata: Metadata = {
   title: "About Noah Zaidi",
@@ -91,7 +92,7 @@ export default function AboutPage() {
             <div className="lg:sticky lg:top-28">
               <div className="plate">
                 <Image
-                  src="/assets/noahark-mark-primary.svg"
+                  src={asset("/assets/noahark-mark-primary.svg")}
                   alt="NoahArk monogram"
                   width={943}
                   height={506}

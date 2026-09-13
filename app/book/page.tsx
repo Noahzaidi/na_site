@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CalendlyEmbed } from "@/components/CalendlyEmbed";
 import { ArrowRight, ExternalIcon } from "@/components/icons";
 import { about, bookingSection, calendlyEmbedUrl, siteConfig } from "@/content/site";
+import { asset } from "@/lib/paths";
 
 export const metadata: Metadata = {
   title: "Book a discovery call",
@@ -35,7 +36,12 @@ export default function BookPage() {
 
             <div className="host mt-10">
               <div className="host-mark" aria-hidden="true">
-                <Image src="/assets/noahark-mark-primary.svg" alt="" width={943} height={506} />
+                <Image
+                  src={asset("/assets/noahark-mark-primary.svg")}
+                  alt=""
+                  width={943}
+                  height={506}
+                />
               </div>
               <div>
                 <p className="font-semibold">You’ll meet Noah Zaidi</p>

@@ -4,6 +4,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { bookNav, hero, isProduction, primaryNav, siteConfig } from "@/content/site";
+import { asset, basePath } from "@/lib/paths";
 import "./globals.css";
 import "./visuals.css";
 
@@ -19,6 +20,10 @@ const socialImage = {
   height: 630,
   alt: `NoahArk: ${hero.headline}`,
 };
+
+// Only the production build on the site's own domain is indexed; the
+// github.io preview (served under a base path) stays out of search results.
+const allowIndexing = isProduction && !basePath;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -45,12 +50,10 @@ export const metadata: Metadata = {
     images: [socialImage],
   },
   icons: {
-    icon: "/favicon.svg",
-    apple: "/apple-touch-icon.png",
+    icon: asset("/favicon.svg"),
+    apple: asset("/apple-touch-icon.png"),
   },
-  robots: isProduction
-    ? { index: true, follow: true }
-    : { index: false, follow: false },
+  robots: allowIndexing ? { index: true, follow: true } : { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
