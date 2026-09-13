@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   // Static export for GitHub Pages: `next build` writes the site to out/.
   output: "export",
   trailingSlash: true,
-  // "/na_site" while hosted at noahzaidi.github.io/na_site (set in the deploy workflow).
+  // Only set (e.g. "/na_site") when serving from a sub-path such as a GitHub project page.
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
   images: { unoptimized: true },
   // A stray lockfile in the home directory otherwise becomes the workspace root.

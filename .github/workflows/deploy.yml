@@ -32,9 +32,6 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_SITE_ENV: production
-          # Served at https://noahzaidi.github.io/na_site/ for now.
-          # Remove this line once noahark.org is connected.
-          NEXT_PUBLIC_BASE_PATH: /na_site
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: out
