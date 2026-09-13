@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 943 506" role="img" aria-label="NoahArk logo">
+
+<defs>
+  <linearGradient id="silver" x1="0" y1="0" x2="0" y2="506" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#FEFEFF"/>
+    <stop offset="0.52" stop-color="#F4F6FC"/>
+    <stop offset="1" stop-color="#E9EDFA"/>
+  </linearGradient>
+  <linearGradient id="tri" x1="482" y1="505" x2="720" y2="318" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#396BD9"/>
+    <stop offset="0.55" stop-color="#4D9FED"/>
+    <stop offset="1" stop-color="#60C9EF"/>
+  </linearGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="15"/>
+  </filter>
+</defs>
+
+
+<path d="M 8 0
+L 111 0
+Q 116 0 120 4
+L 336 238
+Q 339 242 336 246
+L 252 348
+L 118 202
+L 118 493
+Q 118 504 107 504
+L 6 504
+Q 0 504 0 497
+L 0 8
+Q 0 0 8 0 Z" fill="url(#silver)"/>
+<path d="M 601 0
+L 680 0
+Q 686 0 689 5
+L 942 493
+Q 947 504 938 504
+L 805 504
+Q 801 504 798 498
+L 627 166
+L 364 500
+Q 361 504 357 504
+L 194 504
+L 583 12
+Q 590 0 601 0 Z" fill="url(#silver)"/>
+<path d="M 619 318 L 720 505 L 482 505 Z" fill="#3478F6" opacity="0.32" filter="url(#glow)"/>
+<path d="M 619 318 L 720 505 L 482 505 Z" fill="url(#tri)"/>
+
+</svg>

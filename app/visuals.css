@@ -1,0 +1,861 @@
+/* Hero background video and workflow-row illustrations. Loaded after globals.css. */
+
+/* ---------- Hero video ---------- */
+
+/* Desktop only: on small screens the dark overlay hid the clip, so it isn't loaded at all. */
+.hero-video {
+  position: absolute;
+  inset: 0;
+  z-index: -4;
+  display: none;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .hero-video {
+    display: block;
+  }
+}
+
+.hero-video::before,
+.hero-video video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.85;
+}
+
+/* The poster sits under the video as a CSS background, fetched only when this layer is displayed. */
+.hero-video::before {
+  content: "";
+  background: var(--hero-poster) center 60% / cover no-repeat;
+}
+
+.hero-video video {
+  object-fit: cover;
+  object-position: center 60%;
+}
+
+/* Keeps the copy side dark and blends the clip into the page above and below. */
+.hero-video::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, var(--color-space) 0%, rgb(11 15 26 / 0.84) 34%, rgb(11 15 26 / 0.2) 64%, rgb(11 15 26 / 0.36) 100%),
+    linear-gradient(180deg, var(--color-space) 0%, transparent 20%, transparent 72%, var(--color-space) 100%);
+}
+
+.hero-video-toggle {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  background: rgb(11 15 26 / 0.78);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-ink-2);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.hero-video-toggle:hover {
+  color: var(--color-cloud);
+  border-color: rgb(248 250 252 / 0.36);
+}
+
+@media (max-width: 1023px) {
+  .hero-video::after {
+    background: linear-gradient(
+      180deg,
+      rgb(11 15 26 / 0.94) 0%,
+      rgb(11 15 26 / 0.72) 40%,
+      rgb(11 15 26 / 0.8) 75%,
+      var(--color-space) 100%
+    );
+  }
+
+  .hero-video-toggle {
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
+/* ---------- Workflow rows with illustrations ---------- */
+
+.wf-row {
+  grid-template-areas:
+    "copy"
+    "art"
+    "flow";
+}
+
+.wf-row-copy {
+  grid-area: copy;
+}
+
+.wf-row-art {
+  grid-area: art;
+}
+
+.wf-row-flow {
+  grid-area: flow;
+}
+
+@media (min-width: 1024px) {
+  .wf-row {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas:
+      "copy art"
+      "flow art";
+    column-gap: 56px;
+    row-gap: 28px;
+    align-items: start;
+  }
+
+  .wf-row:nth-child(even) {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-areas:
+      "art copy"
+      "art flow";
+  }
+
+  .wf-row-art {
+    align-self: center;
+  }
+}
+
+/* ---------- Scene panels ---------- */
+
+.scene {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 16px;
+  background:
+    radial-gradient(70% 60% at 75% 15%, rgb(37 99 235 / 0.16), transparent 70%),
+    linear-gradient(180deg, #0f1629, var(--color-space));
+  box-shadow: inset 0 1px 0 rgb(248 250 252 / 0.05);
+}
+
+.scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, rgb(248 250 252 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(248 250 252 / 0.045) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 45%, #000, transparent 80%);
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 45%, #000, transparent 80%);
+}
+
+.scene svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--font-sans);
+}
+
+.s-doc {
+  fill: #111a2e;
+  stroke: rgb(248 250 252 / 0.2);
+}
+
+.s-panel {
+  fill: rgb(11 15 26 / 0.9);
+  stroke: rgb(248 250 252 / 0.16);
+}
+
+.s-lane {
+  fill: rgb(34 211 238 / 0.04);
+  stroke: rgb(34 211 238 / 0.32);
+}
+
+.s-lane--held {
+  fill: rgb(248 250 252 / 0.02);
+  stroke: rgb(248 250 252 / 0.38);
+  stroke-dasharray: 4 4;
+}
+
+.s-bar {
+  fill: rgb(248 250 252 / 0.1);
+}
+
+.s-bar-strong {
+  fill: rgb(248 250 252 / 0.26);
+}
+
+.s-label {
+  fill: rgb(248 250 252 / 0.62);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.s-text {
+  fill: rgb(248 250 252 / 0.82);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.s-text-sm {
+  fill: rgb(248 250 252 / 0.58);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.s-hit {
+  fill: rgb(34 211 238 / 0.07);
+  stroke: rgb(34 211 238 / 0.65);
+}
+
+.s-hit--held {
+  fill: rgb(248 250 252 / 0.04);
+  stroke: rgb(248 250 252 / 0.55);
+  stroke-dasharray: 3 3;
+}
+
+.s-link {
+  fill: none;
+  stroke: rgb(34 211 238 / 0.8);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+
+.s-link--held {
+  stroke: rgb(248 250 252 / 0.55);
+  stroke-dasharray: 3 4;
+}
+
+.s-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.s-fill {
+  fill: var(--color-cyan);
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.s-chip {
+  fill: rgb(34 211 238 / 0.1);
+  stroke: rgb(34 211 238 / 0.5);
+}
+
+.s-chip-text {
+  fill: var(--color-cyan);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.s-gate {
+  fill: rgb(34 211 238 / 0.1);
+  stroke: rgb(34 211 238 / 0.6);
+}
+
+.s-gate--held {
+  fill: rgb(11 15 26 / 0.92);
+  stroke: rgb(248 250 252 / 0.55);
+  stroke-dasharray: 3 3;
+}
+
+.s-gate-icon {
+  fill: none;
+  stroke: var(--color-cyan);
+  stroke-width: 1.3;
+}
+
+.s-gate-text {
+  fill: var(--color-cloud);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.s-ok {
+  fill: var(--color-space);
+  stroke: var(--color-cyan);
+}
+
+.s-ok-mark {
+  fill: none;
+  stroke: var(--color-cyan);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.s-warn {
+  fill: var(--color-space);
+  stroke: var(--color-cloud);
+}
+
+.s-warn-mark {
+  stroke: var(--color-cloud);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.s-warn-dot {
+  fill: var(--color-cloud);
+}
+
+.s-dot-muted {
+  fill: rgb(248 250 252 / 0.22);
+}
+
+.s-dot {
+  fill: var(--color-cyan);
+}
+
+.s-dot--held {
+  fill: var(--color-cloud);
+}
+
+.s-pill {
+  fill: rgb(34 211 238 / 0.55);
+}
+
+.s-pill--held {
+  fill: none;
+  stroke: rgb(248 250 252 / 0.6);
+  stroke-dasharray: 3 2;
+}
+
+.s-scan {
+  fill: var(--color-cyan);
+  opacity: 0;
+}
+
+.s-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.scene {
+  --scene-cycle: 8s;
+}
+
+.scene-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 0;
+}
+
+/* Continuous loop, like the hero workflow: hold the finished diagram, reset,
+   scan, then build stage by stage. The first keyframe is the finished state, so
+   a paused, off-screen, reduced-motion or no-JS scene shows the full diagram. */
+@media (prefers-reduced-motion: no-preference) {
+  .s-scan {
+    animation: s-scan-loop var(--scene-cycle) linear infinite both;
+  }
+
+  .s-draw {
+    animation: s-draw-loop var(--scene-cycle) ease-in-out infinite both;
+  }
+
+  .s-pop {
+    animation: s-pop-loop var(--scene-cycle) ease-in-out infinite both;
+  }
+
+  .s-fill {
+    animation: s-fill-loop var(--scene-cycle) ease-in-out infinite both;
+  }
+
+  .scene .st-2 {
+    animation-delay: 0.3s;
+  }
+
+  .scene .st-3 {
+    animation-delay: 0.6s;
+  }
+
+  .scene .st-4 {
+    animation-delay: 0.9s;
+  }
+
+  .scene .st-5 {
+    animation-delay: 1.2s;
+  }
+
+  .scene .st-6 {
+    animation-delay: 1.5s;
+  }
+
+  .scene:is([data-paused="true"], [data-offscreen="true"]) * {
+    animation-play-state: paused !important;
+  }
+}
+
+@keyframes s-scan-loop {
+  0%,
+  30% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  32% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  47% {
+    opacity: 1;
+    transform: translateY(176px);
+  }
+  50%,
+  100% {
+    opacity: 0;
+    transform: translateY(176px);
+  }
+}
+
+@keyframes s-draw-loop {
+  0%,
+  6% {
+    stroke-dashoffset: 0;
+  }
+  10%,
+  50% {
+    stroke-dashoffset: 1;
+  }
+  58%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes s-pop-loop {
+  0%,
+  6% {
+    opacity: 1;
+    transform: none;
+  }
+  10%,
+  50% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  56%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes s-fill-loop {
+  0%,
+  6% {
+    transform: none;
+  }
+  10%,
+  50% {
+    transform: scaleX(0);
+  }
+  58%,
+  100% {
+    transform: none;
+  }
+}
+
+/* ---------- About page ---------- */
+
+.hero--page {
+  padding-bottom: clamp(7rem, 5rem + 6vw, 10rem);
+}
+
+.plate--compact {
+  max-width: 340px;
+  aspect-ratio: 4 / 3;
+}
+
+.booking-points {
+  display: grid;
+  gap: 14px;
+}
+
+.booking-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--color-ink-2);
+}
+
+.booking-points li::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 0.55em;
+  border: 1px solid var(--color-cyan);
+  transform: rotate(45deg);
+}
+
+.booking-frame {
+  overflow: hidden;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 16px;
+  background: var(--color-space-raised);
+  box-shadow: 0 40px 90px -50px rgb(37 99 235 / 0.55);
+}
+
+.booking-frame iframe {
+  display: block;
+  width: 100%;
+  height: 780px;
+  border: 0;
+}
+
+@media (min-width: 1024px) {
+  .booking-frame iframe {
+    height: 720px;
+  }
+}
+
+/* "You'll meet Noah" card on the booking page. */
+.host {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  background: rgb(15 21 38 / 0.6);
+}
+
+.host-mark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 12px;
+  background:
+    radial-gradient(60% 60% at 60% 70%, rgb(37 99 235 / 0.35), transparent 75%),
+    #111a33;
+}
+
+.host-mark img {
+  width: 70%;
+  height: auto;
+}
+
+/* Second supporting line under "Our approach" sits directly below the first. */
+.supporting + .supporting {
+  border-top: 0;
+  padding-top: 14px;
+}
+
+/* ---------- Booking calendar gate (before consent) ---------- */
+
+.booking-gate {
+  display: flex;
+  align-items: center;
+  min-height: 460px;
+  padding: clamp(28px, 5vw, 56px);
+  background:
+    radial-gradient(70% 60% at 85% 10%, rgb(37 99 235 / 0.18), transparent 70%),
+    var(--color-space-raised);
+}
+
+/* ---------- Cookie consent ---------- */
+
+.btn-sm {
+  min-height: 44px;
+  padding: 0.5rem 1.05rem;
+  font-size: 0.9375rem;
+}
+
+.consent {
+  position: fixed;
+  z-index: 60;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  max-width: 470px;
+  padding: 22px 22px 18px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 16px;
+  background: rgb(15 21 38 / 0.97);
+  box-shadow:
+    0 30px 80px -30px rgb(0 0 0 / 0.85),
+    inset 0 1px 0 rgb(248 250 252 / 0.05);
+}
+
+@media (min-width: 640px) {
+  .consent {
+    left: 24px;
+    right: auto;
+    bottom: 24px;
+  }
+}
+
+.consent-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.consent-text {
+  margin-top: 8px;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--color-ink-2);
+}
+
+.consent a,
+.consent-dialog a {
+  color: var(--color-cloud);
+  text-decoration: underline;
+  text-decoration-color: rgb(34 211 238 / 0.6);
+  text-underline-offset: 3px;
+}
+
+.consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.consent-link {
+  min-height: 44px;
+  padding: 0 6px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-ink-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.consent-link:hover {
+  color: var(--color-cloud);
+}
+
+.consent-dialog {
+  position: fixed;
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 18px;
+  background: #0f1526;
+  color: var(--color-cloud);
+  box-shadow: 0 40px 120px -40px rgb(0 0 0 / 0.9);
+}
+
+.consent-dialog::backdrop {
+  background: rgb(5 8 15 / 0.72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.consent-dialog-body {
+  padding: 28px;
+}
+
+.consent-options {
+  margin-top: 20px;
+}
+
+.consent-option {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-block: 16px;
+  border-top: 1px solid var(--color-line);
+}
+
+.consent-option h3 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.consent-option p {
+  margin-top: 4px;
+  font-size: 0.875rem;
+  color: var(--color-ink-2);
+}
+
+.consent-always {
+  flex: none;
+  padding-top: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-cyan);
+}
+
+.consent-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  color: var(--color-ink-2);
+  cursor: pointer;
+}
+
+.consent-close:hover {
+  color: var(--color-cloud);
+  background: rgb(248 250 252 / 0.06);
+}
+
+/* Accessible toggle: a real checkbox with role="switch" over a styled track. */
+.switch {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  width: 46px;
+  height: 44px;
+  cursor: pointer;
+}
+
+.switch input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.switch-track {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  background: rgb(248 250 252 / 0.14);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-cloud);
+  transition: transform 0.2s ease;
+}
+
+.switch input:checked + .switch-track {
+  border-color: var(--color-noah);
+  background: var(--color-noah);
+}
+
+.switch input:checked + .switch-track::after {
+  transform: translateX(20px);
+}
+
+.switch input:focus-visible + .switch-track {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+}
+
+/* ---------- Legal pages and footer references ---------- */
+
+.legal strong {
+  font-weight: 600;
+  color: var(--color-cloud);
+}
+
+.legal code {
+  padding: 1px 6px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 6px;
+  font-size: 0.875em;
+  color: var(--color-cloud);
+}
+
+.legal-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.legal-list li {
+  position: relative;
+  padding-left: 20px;
+  color: var(--color-ink-2);
+}
+
+.legal-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--color-cyan);
+  transform: rotate(45deg);
+}
+
+.legal-dl {
+  margin-top: 1rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.legal-dl > div {
+  display: grid;
+  gap: 4px;
+  padding-block: 14px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.legal-dl dt {
+  color: var(--color-ink-3);
+}
+
+.legal-dl dd {
+  color: var(--color-cloud);
+}
+
+@media (min-width: 640px) {
+  .legal-dl > div {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+
+.inline-button,
+.footer-reg-link {
+  color: var(--color-cloud);
+  text-decoration: underline;
+  text-decoration-color: rgb(34 211 238 / 0.55);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.inline-button:hover,
+.footer-reg-link:hover {
+  text-decoration-color: var(--color-cyan);
+}
