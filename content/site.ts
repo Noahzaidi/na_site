@@ -14,7 +14,7 @@ const cleanEmail = (value: string | undefined) => {
   return email && /^[^\s@]+@noahark\.org$/.test(email) ? email : null;
 };
 
-const DEFAULT_BOOKING_URL = "https://calendly.com/noahzaidi/30min";
+const DEFAULT_BOOKING_URL = "https://calendly.com/noahzaidi/noahark-discovery-call";
 
 // The Calendly calendar has its own page; every CTA leads here.
 const BOOKING_PATH = "/book/";
