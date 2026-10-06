@@ -2,11 +2,13 @@
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { PauseIcon, PlayIcon } from "@/components/icons";
+import type { Dictionary } from "@/content/i18n/types";
 import { asset } from "@/lib/paths";
 
 type HeroVideoProps = {
   sources: readonly { src: string; type: string }[];
   poster: string;
+  t: Pick<Dictionary["media"], "playVideo" | "pauseVideo">;
 };
 
 type NetworkInformation = { saveData?: boolean; effectiveType?: string };
@@ -17,7 +19,7 @@ type NetworkInformation = { saveData?: boolean; effectiveType?: string };
  * clip. Playback starts only when the visitor allows motion and is not on a
  * constrained connection.
  */
-export function HeroVideo({ sources, poster }: HeroVideoProps) {
+export function HeroVideo({ sources, poster, t }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState<boolean | null>(null);
 
@@ -67,7 +69,7 @@ export function HeroVideo({ sources, poster }: HeroVideoProps) {
       {playing !== null && (
         <button type="button" className="hero-video-toggle" onClick={toggle}>
           {playing ? <PauseIcon /> : <PlayIcon />}
-          <span>{playing ? "Pause" : "Play"} background</span>
+          <span>{playing ? t.pauseVideo : t.playVideo}</span>
         </button>
       )}
     </>

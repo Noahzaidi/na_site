@@ -2,9 +2,13 @@
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { PauseIcon, PlayIcon } from "@/components/icons";
+import type { MotionText } from "@/components/MotionToggle";
 
 type SceneFrameProps = {
   label: string;
+  /** "Illustrative workflow" chip. */
+  chip: string;
+  t: MotionText;
   children: ReactNode;
 };
 
@@ -13,7 +17,7 @@ type SceneFrameProps = {
  * is on screen and not paused by the visitor; otherwise it rests on the
  * finished diagram (the first keyframe), which is also what renders without JS.
  */
-export function SceneFrame({ label, children }: SceneFrameProps) {
+export function SceneFrame({ label, chip, t, children }: SceneFrameProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -32,7 +36,7 @@ export function SceneFrame({ label, children }: SceneFrameProps) {
   return (
     <div ref={frameRef} className="scene" data-offscreen={!visible} data-paused={paused}>
       <div className="scene-head">
-        <span className="wf-chip">Illustrative workflow</span>
+        <span className="wf-chip">{chip}</span>
         <button
           type="button"
           className="wf-toggle scene-toggle"
@@ -40,8 +44,8 @@ export function SceneFrame({ label, children }: SceneFrameProps) {
         >
           {paused ? <PlayIcon /> : <PauseIcon />}
           <span>
-            {paused ? "Play" : "Pause"}
-            <span className="sr-only"> animation</span>
+            {paused ? t.play : t.pause}
+            <span className="sr-only"> {t.animation}</span>
           </span>
         </button>
       </div>

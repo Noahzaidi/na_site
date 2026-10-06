@@ -1,6 +1,7 @@
-// Renders the social preview (public/og.jpg) and the Apple touch icon
-// (public/apple-touch-icon.png) from the approved vector assets.
-// Run with `npm run og` after changing the headline or brand assets.
+// Renders the social previews (public/og.jpg, og-es.jpg, og-fr.jpg) and the
+// Apple touch icon (public/apple-touch-icon.png) from the approved vector assets.
+// Run with `npm run og` after changing the headline or brand assets. The
+// headlines mirror home.hero.headline in content/i18n/{en,es,fr}.ts.
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
@@ -13,8 +14,30 @@ const svgDataUri = async (path) =>
 const lockup = await svgDataUri("public/assets/noahark-lockup-horizontal.svg");
 const favicon = await svgDataUri("public/favicon.svg");
 
-const ogHtml = `<!doctype html>
-<html><head><meta charset="utf-8">
+const previews = [
+  {
+    file: "public/og.jpg",
+    lang: "en",
+    headline: "We build specialised AI agents and put them to work in your business.",
+    foot: "Invoices · Purchase orders · Shared inboxes",
+  },
+  {
+    file: "public/og-es.jpg",
+    lang: "es",
+    headline: "Creamos agentes de IA especializados y los ponemos a trabajar en tu empresa.",
+    foot: "Facturas · Órdenes de compra · Buzones compartidos",
+  },
+  {
+    file: "public/og-fr.jpg",
+    lang: "fr",
+    headline:
+      "Nous concevons des agents d’IA spécialisés et les mettons au travail dans votre entreprise.",
+    foot: "Factures · Bons de commande · Boîtes partagées",
+  },
+];
+
+const ogHtml = ({ lang, headline, foot }) => `<!doctype html>
+<html lang="${lang}"><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=block" rel="stylesheet">
 <style>
   * { margin: 0; box-sizing: border-box; }
@@ -45,9 +68,9 @@ const ogHtml = `<!doctype html>
   <div class="grid"></div><div class="haze"></div><div class="horizon"></div>
   <div class="content">
     <img class="lockup" src="${lockup}" alt="">
-    <h1>We build specialised AI agents and put them to work in your business.</h1>
+    <h1>${headline}</h1>
   </div>
-  <div class="foot"><span>Invoices · Purchase orders · Shared inboxes</span><b>noahark.org</b></div>
+  <div class="foot"><span>${foot}</span><b>noahark.org</b></div>
 </body></html>`;
 
 const iconHtml = `<!doctype html><html><head><style>
@@ -58,9 +81,11 @@ const iconHtml = `<!doctype html><html><head><style>
 const browser = await chromium.launch();
 try {
   const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
-  await page.setContent(ogHtml, { waitUntil: "networkidle" });
-  await page.evaluate(() => document.fonts.ready);
-  await page.screenshot({ path: file("public/og.jpg"), type: "jpeg", quality: 90 });
+  for (const preview of previews) {
+    await page.setContent(ogHtml(preview), { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: file(preview.file), type: "jpeg", quality: 90 });
+  }
 
   await page.setViewportSize({ width: 180, height: 180 });
   await page.setContent(iconHtml, { waitUntil: "load" });
@@ -69,4 +94,4 @@ try {
   await browser.close();
 }
 
-console.log("Wrote public/og.jpg and public/apple-touch-icon.png");
+console.log(`Wrote ${previews.map((preview) => preview.file).join(", ")} and public/apple-touch-icon.png`);

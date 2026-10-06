@@ -2,15 +2,19 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Dictionary } from "@/content/i18n/types";
 import { legal } from "@/content/legal";
+import { PAGE_PATHS } from "@/content/site";
 import { OPEN_SETTINGS_EVENT, readConsent, saveConsent, useConsent } from "@/lib/consent";
+import { format, type Locale, localePath } from "@/lib/i18n";
+import { rich } from "@/lib/rich";
 
 /**
  * First-visit cookie banner and the settings dialog (reopened from the footer).
  * Accept and reject carry equal weight, as the CNIL requires. The only optional
  * category is the Calendly booking calendar; the site sets no cookies itself.
  */
-export function CookieConsent() {
+export function CookieConsent({ locale, t }: { locale: Locale; t: Dictionary["cookies"] }) {
   const consent = useConsent();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [allowExternal, setAllowExternal] = useState(false);
@@ -35,22 +39,24 @@ export function CookieConsent() {
       {consent === null && (
         <section className="consent" aria-labelledby="consent-title">
           <h2 id="consent-title" className="consent-title">
-            Your privacy
+            {t.title}
           </h2>
           <p className="consent-text">
-            This site uses no analytics or advertising cookies. With your permission, the
-            booking page loads Calendly’s calendar, which sets its own cookies. See the{" "}
-            <Link href="/privacy/#cookies">privacy policy</Link>.
+            {rich(t.text, {
+              link: (label) => (
+                <Link href={localePath(locale, `${PAGE_PATHS.privacy}#cookies`)}>{label}</Link>
+              ),
+            })}
           </p>
           <div className="consent-actions">
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => choose(true)}>
-              Accept all
+              {t.acceptAll}
             </button>
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => choose(false)}>
-              Reject non-essential
+              {t.rejectNonEssential}
             </button>
             <button type="button" className="consent-link" onClick={openSettings}>
-              Settings
+              {t.settings}
             </button>
           </div>
         </section>
@@ -59,27 +65,24 @@ export function CookieConsent() {
       <dialog ref={dialogRef} className="consent-dialog" aria-labelledby="consent-dialog-title">
         <div className="consent-dialog-body">
           <h2 id="consent-dialog-title" className="text-xl font-semibold tracking-tight">
-            Cookie settings
+            {t.dialogTitle}
           </h2>
           <p className="mt-2 pr-10 text-[0.9375rem] text-ink-2">
-            Choose which optional content may load. Your choice is kept for{" "}
-            {legal.consentMonths} months and can be changed at any time from the footer.
+            {format(t.dialogIntro, { months: legal.consentMonths })}
           </p>
 
           <div className="consent-options">
             <div className="consent-option">
               <div>
-                <h3>Essential</h3>
-                <p>Remembers your cookie choice in your browser so the site can respect it.</p>
+                <h3>{t.essentialTitle}</h3>
+                <p>{t.essentialBody}</p>
               </div>
-              <span className="consent-always">Always on</span>
+              <span className="consent-always">{t.alwaysOn}</span>
             </div>
             <div className="consent-option">
               <div>
-                <h3 id="consent-external-label">Booking calendar (Calendly)</h3>
-                <p id="consent-external-desc">
-                  Loads the calendar on the booking page. Calendly sets its own cookies.
-                </p>
+                <h3 id="consent-external-label">{t.externalTitle}</h3>
+                <p id="consent-external-desc">{t.externalBody}</p>
               </div>
               <label className="switch">
                 <input
@@ -101,19 +104,19 @@ export function CookieConsent() {
               className="btn btn-primary btn-sm"
               onClick={() => choose(allowExternal)}
             >
-              Save choices
+              {t.save}
             </button>
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => choose(true)}>
-              Accept all
+              {t.acceptAll}
             </button>
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => choose(false)}>
-              Reject non-essential
+              {t.rejectNonEssential}
             </button>
           </div>
         </div>
 
         <form method="dialog">
-          <button type="submit" className="consent-close" aria-label="Close cookie settings">
+          <button type="submit" className="consent-close" aria-label={t.close}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>

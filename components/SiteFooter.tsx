@@ -2,12 +2,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookingLink } from "@/components/BookingLink";
 import { CookieSettingsButton } from "@/components/CookieSettingsButton";
+import type { Dictionary } from "@/content/i18n/types";
 import { regulations } from "@/content/legal";
-import { formattedAddress, siteConfig } from "@/content/site";
+import { formatAddress, PAGE_PATHS, siteConfig } from "@/content/site";
+import { type Locale, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
+import { rich } from "@/lib/rich";
 
-export function SiteFooter() {
-  const year = new Date().getFullYear();
+export type SiteFooterText = {
+  footer: Dictionary["footer"];
+  common: Pick<
+    Dictionary["common"],
+    "brandLine" | "bookDiscoveryCall" | "mailSubject" | "newTab" | "newTabOfficial"
+  >;
+};
+
+type SiteFooterProps = {
+  locale: Locale;
+  t: SiteFooterText;
+  /** Passed in so a client-rendered footer (404 page) shows the build year, as the HTML does. */
+  year: number;
+};
+
+export function SiteFooter({ locale, t, year }: SiteFooterProps) {
+  const regulationLink = (url: string, label: string) => (
+    <a className="footer-reg-link" href={url} target="_blank" rel="noopener">
+      {label}
+      <span className="sr-only"> {t.common.newTabOfficial}</span>
+    </a>
+  );
 
   return (
     <footer className="border-t border-line">
@@ -21,20 +44,26 @@ export function SiteFooter() {
             className="h-10 w-auto"
           />
           <p className="mt-4 text-sm uppercase tracking-[0.2em] text-ink-3">
-            {siteConfig.brandLine}
+            {t.common.brandLine}
           </p>
         </div>
 
-        <nav aria-label="Footer">
+        <nav aria-label={t.footer.nav}>
           <ul className="flex flex-wrap gap-x-8 gap-y-1 text-[0.9375rem]">
             {siteConfig.bookingUrl && (
               <li>
-                <BookingLink className="footer-link">Book a discovery call</BookingLink>
+                <BookingLink
+                  locale={locale}
+                  mailSubject={t.common.mailSubject}
+                  className="footer-link"
+                >
+                  {t.common.bookDiscoveryCall}
+                </BookingLink>
               </li>
             )}
             <li>
-              <Link className="footer-link" href="/about/">
-                About
+              <Link className="footer-link" href={localePath(locale, PAGE_PATHS.about)}>
+                {t.footer.about}
               </Link>
             </li>
             {siteConfig.contactEmail && (
@@ -51,7 +80,7 @@ export function SiteFooter() {
                 target="_blank"
                 rel="noopener"
               >
-                LinkedIn<span className="sr-only"> (opens in a new tab)</span>
+                LinkedIn<span className="sr-only"> {t.common.newTab}</span>
               </a>
             </li>
           </ul>
@@ -60,32 +89,25 @@ export function SiteFooter() {
 
       <div className="wrap flex flex-col gap-2 border-t border-line py-5 text-sm md:flex-row md:items-center md:justify-between md:gap-8">
         <p className="text-ink-2">
-          Workflows designed with the{" "}
-          <a className="footer-reg-link" href={regulations.aiAct.url} target="_blank" rel="noopener">
-            {regulations.aiAct.label}
-            <span className="sr-only"> (opens the official text in a new tab)</span>
-          </a>{" "}
-          and{" "}
-          <a className="footer-reg-link" href={regulations.gdpr.url} target="_blank" rel="noopener">
-            {regulations.gdpr.label}
-            <span className="sr-only"> (opens the official text in a new tab)</span>
-          </a>{" "}
-          in mind.
+          {rich(t.footer.regulation, {
+            aiAct: (label) => regulationLink(regulations.aiAct.url, label),
+            gdpr: (label) => regulationLink(regulations.gdpr.url, label),
+          })}
         </p>
         <ul className="flex flex-wrap gap-x-6">
           <li>
-            <Link className="footer-link" href="/privacy/">
-              Privacy policy
+            <Link className="footer-link" href={localePath(locale, PAGE_PATHS.privacy)}>
+              {t.footer.privacy}
             </Link>
           </li>
           <li>
-            <Link className="footer-link" href="/legal/">
-              Legal notice
+            <Link className="footer-link" href={localePath(locale, PAGE_PATHS.legal)}>
+              {t.footer.legal}
             </Link>
           </li>
           <li>
             <CookieSettingsButton className="footer-link cursor-pointer">
-              Cookie settings
+              {t.footer.cookieSettings}
             </CookieSettingsButton>
           </li>
         </ul>
@@ -93,7 +115,7 @@ export function SiteFooter() {
 
       <div className="wrap flex flex-col gap-1 border-t border-line py-6 text-sm text-ink-3 md:flex-row md:justify-between md:gap-8">
         <p>© {year} NoahArk</p>
-        <p>{formattedAddress}</p>
+        <p>{formatAddress(locale)}</p>
         <p>{siteConfig.domain}</p>
       </div>
     </footer>

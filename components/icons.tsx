@@ -64,3 +64,11 @@ export function PlayIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function ChevronDownIcon({ className }: IconProps) {
+  return (
+    <svg className={className} width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M4 6l4 4 4-4" {...stroke} strokeWidth={1.8} />
+    </svg>
+  );
+}

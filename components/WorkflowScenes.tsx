@@ -1,29 +1,58 @@
 import type { ReactNode } from "react";
+import type { MotionText } from "@/components/MotionToggle";
 import { SceneFrame } from "@/components/SceneFrame";
+import type { Dictionary } from "@/content/i18n/types";
 
 // Hand-drawn SVG illustrations for the example workflow rows. Field names and
 // abstract bars only: no invented data. CSS in app/visuals.css loops each scene
 // (reset, scan, staged build, hold); `st-N` classes set the build order.
+// Labels come from the dictionary; SVG text cannot wrap, so the pills and bars
+// around a label are sized from its length (the English layout is the minimum).
 
 export type SceneKind = "invoice" | "purchase-order" | "inbox";
 
+type SceneText = Dictionary["home"]["scenes"];
+
+type SceneProps = {
+  label: string;
+  chip: string;
+  media: MotionText;
+  children: ReactNode;
+};
+
 const stage = (n: number) => `st-${n}`;
 
-function Scene({ label, children }: { label: string; children: ReactNode }) {
-  return <SceneFrame label={label}>{children}</SceneFrame>;
+// Approximate advance widths (px per character) of the scene label styles.
+const TEXT_12 = 6.2; // .s-text
+const CHIP_10 = 5.4; // .s-chip-text
+const GATE_11_5 = 5.6; // .s-gate-text
+
+function Scene({ label, chip, media, children }: SceneProps) {
+  return (
+    <SceneFrame label={label} chip={chip} t={media}>
+      {children}
+    </SceneFrame>
+  );
 }
 
-function InvoiceScene() {
+function InvoiceScene({ t, chip, media }: { t: SceneText["invoice"]; chip: string; media: MotionText }) {
   const fields = [
-    { label: "Supplier", y: 100, width: 92, erpY: 106, fill: 50 },
-    { label: "Amount", y: 130, width: 64, erpY: 134, fill: 34 },
-    { label: "PO ref.", y: 160, width: 78, erpY: 162, fill: 42 },
+    { label: t.supplier, y: 100, width: 92, erpY: 106, fill: 50 },
+    { label: t.amount, y: 130, width: 64, erpY: 134, fill: 34 },
+    { label: t.poRef, y: 160, width: 78, erpY: 162, fill: 42 },
   ];
+  // ERP entry rows: the value bars start after the longest field name and end at x=362.
+  const longest = Math.max(...fields.map((field) => field.label.length));
+  const barX = Math.max(306, Math.round(250 + longest * TEXT_12 + 6));
+  const barWidth = 362 - barX;
+  const chipWidth = Math.max(42, Math.round(t.draft.length * CHIP_10 + 14));
+  const gateWidth = Math.max(126, Math.round(42 + t.gate.length * GATE_11_5));
+  const gateX = 307 - gateWidth / 2;
 
   return (
-    <Scene label="Illustration: fields are read from an invoice and prepared as a draft ERP entry that waits for a person to approve it.">
+    <Scene label={t.label} chip={chip} media={media}>
       <rect className="s-doc" x="24" y="30" width="136" height="200" rx="8" />
-      <text className="s-label" x="38" y="54">INVOICE</text>
+      <text className="s-label" x="38" y="54">{t.doc}</text>
       <rect className="s-bar-strong" x="38" y="64" width="64" height="6" rx="3" />
       <rect className="s-bar" x="38" y="76" width="44" height="5" rx="2.5" />
       {fields.map((field, i) => (
@@ -47,41 +76,57 @@ function InvoiceScene() {
       ))}
 
       <rect className="s-panel" x="236" y="64" width="140" height="124" rx="10" />
-      <text className="s-label" x="250" y="86">ERP ENTRY</text>
-      <rect className="s-chip" x="322" y="74" width="42" height="18" rx="9" />
-      <text className="s-chip-text" x="343" y="86.5" textAnchor="middle">Draft</text>
+      <text className="s-label" x="250" y="86">{t.erp}</text>
+      <rect className="s-chip" x={364 - chipWidth} y="74" width={chipWidth} height="18" rx="9" />
+      <text className="s-chip-text" x={364 - chipWidth / 2} y="86.5" textAnchor="middle">{t.draft}</text>
       {fields.map((field, i) => (
         <g key={field.label}>
           <text className="s-text" x="250" y={field.erpY + 4}>{field.label}</text>
-          <rect className="s-bar" x="306" y={field.erpY - 3} width="56" height="6" rx="3" />
-          <rect className={`s-fill ${stage(i + 4)}`} x="306" y={field.erpY - 3} width={field.fill} height="6" rx="3" />
+          <rect className="s-bar" x={barX} y={field.erpY - 3} width={barWidth} height="6" rx="3" />
+          <rect
+            className={`s-fill ${stage(i + 4)}`}
+            x={barX}
+            y={field.erpY - 3}
+            width={Math.round((field.fill / 56) * barWidth)}
+            height="6"
+            rx="3"
+          />
         </g>
       ))}
 
       <path className={`s-link s-draw ${stage(6)}`} d="M306 188 V 212" pathLength={1} />
       <g className={`s-pop ${stage(6)}`}>
-        <rect className="s-gate" x="244" y="212" width="126" height="30" rx="15" />
-        <path className="s-gate-icon" d="M258 227 l4 -4 l4 4 l-4 4 Z" />
-        <text className="s-gate-text" x="274" y="231">Approve to post</text>
+        <rect className="s-gate" x={gateX} y="212" width={gateWidth} height="30" rx="15" />
+        <path className="s-gate-icon" d={`M${gateX + 14} 227 l4 -4 l4 4 l-4 4 Z`} />
+        <text className="s-gate-text" x={gateX + 30} y="231">{t.gate}</text>
       </g>
     </Scene>
   );
 }
 
-function PurchaseOrderScene() {
+function PurchaseOrderScene({
+  t,
+  chip,
+  media,
+}: {
+  t: SceneText["purchaseOrder"];
+  chip: string;
+  media: MotionText;
+}) {
   const rows = [
-    { label: "Item", y: 92, a: 84, b: 84, match: true },
-    { label: "Quantity", y: 124, a: 40, b: 40, match: true },
-    { label: "Unit price", y: 156, a: 56, b: 56, match: true },
-    { label: "Delivery date", y: 188, a: 64, b: 46, match: false },
+    { label: t.item, y: 92, a: 84, b: 84, match: true },
+    { label: t.quantity, y: 124, a: 40, b: 40, match: true },
+    { label: t.unitPrice, y: 156, a: 56, b: 56, match: true },
+    { label: t.deliveryDate, y: 188, a: 64, b: 46, match: false },
   ];
   const docs = [
-    { x: 24, title: "PURCHASE ORDER", key: "a" as const },
-    { x: 240, title: "SUPPLIER DOC", key: "b" as const },
+    { x: 24, title: t.po, key: "a" as const },
+    { x: 240, title: t.supplierDoc, key: "b" as const },
   ];
+  const gateWidth = Math.max(164, Math.round(28 + t.gate.length * GATE_11_5));
 
   return (
-    <Scene label="Illustration: a supplier document is compared field by field with the purchase order, and a mismatched delivery date is flagged for the operations team.">
+    <Scene label={t.label} chip={chip} media={media}>
       {docs.map((doc) => (
         <g key={doc.title}>
           <rect className="s-doc" x={doc.x} y="30" width="136" height="186" rx="8" />
@@ -118,14 +163,14 @@ function PurchaseOrderScene() {
 
       <g className={`s-pop ${stage(6)}`}>
         <path className="s-link s-link--held" d="M200 200 V 236" />
-        <rect className="s-gate--held" x="118" y="236" width="164" height="30" rx="15" />
-        <text className="s-gate-text" x="200" y="255" textAnchor="middle">Flagged for operations</text>
+        <rect className="s-gate--held" x={200 - gateWidth / 2} y="236" width={gateWidth} height="30" rx="15" />
+        <text className="s-gate-text" x="200" y="255" textAnchor="middle">{t.gate}</text>
       </g>
     </Scene>
   );
 }
 
-function InboxScene() {
+function InboxScene({ t, chip, media }: { t: SceneText["inbox"]; chip: string; media: MotionText }) {
   const messages = [
     { y: 72, subject: 84, preview: 60, lane: 0, slot: 0 },
     { y: 106, subject: 70, preview: 72, lane: 0, slot: 1 },
@@ -134,15 +179,15 @@ function InboxScene() {
     { y: 208, subject: 78, preview: 56, lane: 2, slot: 0 },
   ];
   const lanes = [
-    { y: 40, label: "ORDERS", held: false },
-    { y: 112, label: "DELIVERIES", held: false },
-    { y: 184, label: "NEEDS REVIEW", held: true },
+    { y: 40, label: t.orders, held: false },
+    { y: 112, label: t.deliveries, held: false },
+    { y: 184, label: t.review, held: true },
   ];
 
   return (
-    <Scene label="Illustration: messages in a shared inbox are classified and routed to queues, and an uncertain request is held for a person to review.">
+    <Scene label={t.label} chip={chip} media={media}>
       <rect className="s-panel" x="24" y="30" width="150" height="214" rx="10" />
-      <text className="s-label" x="38" y="54">SHARED INBOX</text>
+      <text className="s-label" x="38" y="54">{t.inbox}</text>
 
       {lanes.map((lane) => (
         <g key={lane.label}>
@@ -192,8 +237,18 @@ function InboxScene() {
   );
 }
 
-export function WorkflowScene({ kind }: { kind: SceneKind }) {
-  if (kind === "invoice") return <InvoiceScene />;
-  if (kind === "purchase-order") return <PurchaseOrderScene />;
-  return <InboxScene />;
+type WorkflowSceneProps = {
+  kind: SceneKind;
+  t: SceneText;
+  /** "Illustrative workflow" chip. */
+  chip: string;
+  media: MotionText;
+};
+
+export function WorkflowScene({ kind, t, chip, media }: WorkflowSceneProps) {
+  if (kind === "invoice") return <InvoiceScene t={t.invoice} chip={chip} media={media} />;
+  if (kind === "purchase-order") {
+    return <PurchaseOrderScene t={t.purchaseOrder} chip={chip} media={media} />;
+  }
+  return <InboxScene t={t.inbox} chip={chip} media={media} />;
 }

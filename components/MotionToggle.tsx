@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { PauseIcon, PlayIcon } from "@/components/icons";
+import type { Dictionary } from "@/content/i18n/types";
+
+export type MotionText = Pick<Dictionary["media"], "play" | "pause" | "animation">;
 
 /** Pauses the continuous workflow animation (WCAG 2.2.2). Hidden under reduced motion. */
-export function MotionToggle({ targetId }: { targetId: string }) {
+export function MotionToggle({ targetId, t }: { targetId: string; t: MotionText }) {
   const [paused, setPaused] = useState(false);
 
   const toggle = () => {
@@ -17,8 +20,8 @@ export function MotionToggle({ targetId }: { targetId: string }) {
     <button type="button" className="wf-toggle" onClick={toggle} aria-controls={targetId}>
       {paused ? <PlayIcon /> : <PauseIcon />}
       <span>
-        {paused ? "Play" : "Pause"}
-        <span className="sr-only"> animation</span>
+        {paused ? t.play : t.pause}
+        <span className="sr-only"> {t.animation}</span>
       </span>
     </button>
   );
